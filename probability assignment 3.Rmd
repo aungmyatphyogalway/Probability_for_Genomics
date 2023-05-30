@@ -1,0 +1,77 @@
+---
+title: "assignment3"
+author: "aungmyatphyo"
+date: "2022-10-11"
+output: pdf_document
+---
+
+##1
+Xbar is approximately normally distributed random variable because of large sample(50) according to central limit theorem.
+
+##2
+```{r}
+mean=10
+variance<- 10/50
+variance
+```
+
+##3
+```{r}
+1-ppois(11,10*50)
+```
+
+##4
+M1 has 1 free parameter and M2 has 2 free parameters.
+
+##5
+Because of the free parameter, M1 is nested in M2.
+
+##6
+```{r}
+x<-(20+30)/(50+60)
+x
+```
+
+
+#7
+```{r}
+m0<- sum(log(dbinom(20,50,0.4545455))) + sum(log(dbinom(30,60,0.4545455)))
+
+m1<- sum(log(dbinom(20,50,0.4))) +sum(log(dbinom(30,60,0.5)))
+lrt_stat<- -2*(m0 - m1)
+lrt_stat
+1-pchisq(lrt_stat,1)
+```
+
+#8
+```{r}
+exp<- c(25,11,21,26,29,23,7,31,27,32,32,36,46,25,25,21,24,22,27,26)
+loglikefunction<- function(par,count){
+  m=par[1]
+  sd=par[2]
+  sum(log(dnorm(counts,m,sd)))
+}
+optimize(loglikefunction,c(15,30),control = list(fnscale= -1),data=exp)
+```
+
+#9
+```{r}
+x<- c(25,11,21,26,29,23,7,31,27,32,32,36,46,25,25,21,24,22,27,26)
+y<- c(77,86,89,69,40,44,4,80,53,59,26,98,119,58,29,29,45,45,58,46)
+mean(x)
+mean(y)
+mfun<- function(par,x,y){
+  meanx=par[1]
+  meany=par[2]
+  sum(log(dnorm(x,meanx,sd))) + sum(log(dnorm(y,meany,sd)))}
+optimize(mfun,c(25,11),data=x)
+m1<- sum(log(dnorm(x,25.8,sd))) + sum(log(dnorm(y,57.7,sd)))
+lrttt<- -2* (m0- m1)
+1- pchisq(lrttt, df=22)
+t.test(x,y, alternative = "two.sided")
+```
+
+#10
+```{r}
+8/7,5/15,7/11,8/4,10/20,7/10,2/8,4/12,9/8,6/16
+```

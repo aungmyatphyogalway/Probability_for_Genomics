@@ -1,0 +1,114 @@
+---
+title: "assignment4 probability"
+author: "aungmyatphyo"
+date: "2022-10-14"
+output: pdf_document
+---
+
+##1
+```{r}
+tpm<-c(14, 19, 18, 14, 19, 11, 12, 18, 12, 10, 18, 10, 12, 13, 14, 15, 17, 13, 18, 17, 13, 13, 15, 18, 14, 15, 11, 11, 13, 16, 15, 18, 12, 12, 14, 13, 15, 20, 11, 12, 18, 15, 16, 14, 19, 12, 17, 14, 18, 12, 16, 12, 14, 15, 12, 13, 19, 14, 20, 17)
+T=1
+F=0
+pros_cancer<-c(T, T, F, F, T, T, T, T, T, F, T, T, F, T, T, T, T, F, T, T, T, T, F, T, F, F, F, F, F, F, T, T, T, F, T, T, T, T, F, F, T, T, F, F, F, F, F, F, T, F, T, T, F, F, F, F, F, T, T, T)
+pros_cancer
+```
+
+#2
+```{r}
+like1<-function(pars,x,y){
+  a=pars[1]
+  b=pars[2]
+  p=exp(a+b*x)/(1+exp(a+b*x))
+  sum(log(p[y==1]))+sum(log(1-p[y==0]))
+}
+m1<-like1(pars=c(-5,0.2),x=tpm,y=pros_cancer)
+m1
+```
+
+#3
+```{r}
+opt1<-optim(c(-3,0.1),like1,x=tpm,y=pros_cancer,control = list(fnscale=-1))
+opt1
+intercept<-opt1$par[1]
+slope<-opt1$par[2]
+```
+
+#4
+```{r}
+general<-summary(glm(pros_cancer~tpm,family = "binomial"))
+general
+```
+
+#5
+```{r}
+a<- -3.0709
+b<- 0.2240
+tpm40<- exp(a+b*40)/(1+exp(a+b*40))
+tpm40
+```
+
+#6
+```{r}
+CC=0
+CT=1
+TT=2
+genotype<- c(1,2,2,1,2,0,0,2,0,0,2,0,0,1,1,1,2,1,2,2,1,1,1,2,1,1,0,0,1,1,1,2,0,0,1, 1,1,2,0,0,2,1,1,1,2,0,2,1,2,0,1,0,1,1,0,1,2,1,2,2)
+tpm
+func1<-function(pars,x,y){
+  a=pars[1]
+  b=pars[2]
+  sd=pars[3]
+  sum(log(dnorm(y-(a+b*x),0,sd)))
+}
+opt2<-optim(c(1,2,3),func1,x=genotype,y=tpm,control=list(fnscale=-1))
+opt2
+```
+
+#7
+```{r}
+s=0.945066
+va<- (var(tpm)-s**2)/var(tpm)
+va
+```
+
+#8
+```{r}
+pearson<- cor.test(genotype,tpm)
+pearson
+multiple_Rsquared<-0.9372363^2
+summary(lm(tpm~genotype))
+```
+
+#9
+```{r}
+genotype
+geno=genotype
+geno[geno==2]<-1
+geno
+opt3<-optim(c(1,2,3),func1,x=geno,y=tpm,control = list(fnscale=-1))
+opt3
+st<- 1.902796
+va2<- (var(tpm)- st**2)/var(tpm)
+va2
+```
+##the proportion of variance (va2)is less than before(va). The second model(geno/dominant effect of genotype on gene expression) provides better fit to data.
+
+#10
+```{r}
+opt4<- optim(c(-3,0.2),like1,x=genotype,y=pros_cancer, control=list(fnscale=-1))
+opt4
+
+like2<-function(pars,x,y){
+  a=pars[1]
+  b=0
+  p=exp(a+b*x)/(1+exp(a+b*x))
+  sum(log(p[y==1]))+sum(log(1-p[y==0]))
+}
+
+opt5<- optim(c(-2),like2,x=genotype,y=pros_cancer,control = list(fnscale=-1))
+opt5
+lrt_stat<- -2*(opt5$value - opt4$value)
+1-pchisq(lrt_stat,1)
+```
+#the value is 0.01572032 (less than 0.05) so there is an evidence between genotype and prostate cancer risk.
